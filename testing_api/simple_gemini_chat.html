@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gemini Chat Demo</title>
+</head>
+<body>
+  <h1>Gemini Chat</h1>
+  <div>
+    <textarea id="userInput" rows="4" cols="50" placeholder="Ask something..."></textarea><br>
+    <button id="sendBtn">Send</button>
+  </div>
+  <pre id="output"></pre>
+
+  <!-- ✅ Use ESM module CDN and modern JS -->
+  <script type="module">
+    import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+
+    const API_KEY = "";
+
+    const genAI = new GoogleGenerativeAI(API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+    document.getElementById("sendBtn").addEventListener("click", async () => {
+      const userMessage = document.getElementById("userInput").value;
+      const output = document.getElementById("output");
+      output.textContent = "Thinking...";
+
+      try {
+        const result = await model.generateContent(userMessage);
+        const response = await result.response.text();
+        output.textContent = "Gemini: " + response;
+      } catch (error) {
+        console.error(error);
+        output.textContent = "❌ Error: " + error.message;
+      }
+    });
+  </script>
+</body>
+</html>

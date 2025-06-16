@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Gemini Chat</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="h-screen flex flex-col bg-gray-50">
+  <!-- Chat log -->
+  <section id="log" class="flex-1 overflow-y-auto p-4 space-y-2"></section>
+
+  <!-- Prompt box -->
+  <form id="form" class="flex p-4 bg-white shadow-inner gap-2">
+    <input id="input"
+           class="flex-1 border rounded px-3 py-2 focus:outline-none"
+           placeholder="Type a message…" autocomplete="off" />
+    <button
+      class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+      Send
+    </button>
+  </form>
+
+<script type="module">
+  import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+
+  const API_KEY = ""; // Replace with your Gemini API key
+
+  const genAI = new GoogleGenerativeAI(API_KEY);
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+  const log  = document.getElementById("log");
+  const form = document.getElementById("form");
+  const inp  = document.getElementById("input");
+  let history = [];
+
+function addBubble(text, who) {
+  const wrap = document.createElement("div");
+  wrap.className = who === "user" ? "text-right" : "text-left";
+  if (who === "bot") {
+    // Use <pre> for bot to preserve formatting
+    wrap.innerHTML =
+      `<span class="inline-block max-w-xl px-3 py-2 rounded-lg
+                    bg-gray-200 text-gray-900 whitespace-pre-wrap text-left"
+             style="white-space: pre-wrap; text-align: left;">
+         <pre style="margin:0; background:transparent; font-family:inherit; white-space:pre-wrap;">${text}</pre>
+       </span>`;
+  } else {
+    wrap.innerHTML =
+      `<span class="inline-block max-w-xl px-3 py-2 rounded-lg
+                    bg-blue-600 text-white">
+         ${text}
+       </span>`;
+  }
+  log.appendChild(wrap);
+  log.scrollTop = log.scrollHeight;
+}
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const msg = inp.value.trim();
+    if (!msg) return;
+    addBubble(msg, "user");
+    history.push(msg);
+    inp.value = "";
+
+    try {
+      const result = await model.generateContent(msg);
+      const response = await result.response.text();
+      addBubble(response, "bot");
+      history.push(response);
+    } catch (err) {
+      addBubble("⚠️ Error contacting Gemini", "bot");
+      console.error(err);
+    }
+  });
+</script>
+</body>
+</html>
