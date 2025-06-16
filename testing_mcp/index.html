@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gemini MCP Notes Summarizer</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    button { margin-top: 10px; }
+    #notesList button { margin: 5px 0; }
+    pre { background: #f0f0f0; padding: 10px; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>Summarize Notes via Gemini</h1>
+
+  <button id="loadNotesBtn">Load Notes</button>
+  <ul id="notesList"></ul>
+  <pre id="output"></pre>
+
+  <script type="module">
+    const MCP_SERVER = "http://localhost:5000";
+
+    const notesList = document.getElementById("notesList");
+    const output     = document.getElementById("output");
+    document.getElementById("loadNotesBtn")
+            .addEventListener("click", loadNotes);
+
+    async function loadNotes() {
+      output.textContent = "";
+      notesList.textContent = "Loading notes…";
+
+      try {
+        const res   = await fetch(`${MCP_SERVER}/notes`);
+        const notes = await res.json();
+
+        notesList.innerHTML = "";
+        if (!Array.isArray(notes) || notes.length === 0) {
+          notesList.textContent = "No notes found.";
+          return;
+        }
+
+        for (const note of notes) {
+          const li  = document.createElement("li");
+          const btn = document.createElement("button");
+          btn.textContent = note;
+          btn.onclick     = () => summarizeNote(note);
+          li.appendChild(btn);
+          notesList.appendChild(li);
+        }
+      } catch (err) {
+        notesList.textContent = "Failed to load notes: " + err.message;
+      }
+    }
+
+    async function summarizeNote(filename) {
+      output.textContent = "Loading note content…";
+
+      try {
+        const noteRes = await fetch(
+          `${MCP_SERVER}/notes/${encodeURIComponent(filename)}`
+        );
+        if (!noteRes.ok) throw new Error(await noteRes.text());
+        const noteText = await noteRes.text();
+
+        output.textContent = "Summarizing note…";
+
+        const sumRes = await fetch(`${MCP_SERVER}/summarize`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content: noteText }),
+        });
+        if (!sumRes.ok) throw new Error(await sumRes.text());
+
+        const { summary } = await sumRes.json();
+        output.textContent =
+          `Summary of “${filename}”:\n\n${summary}`;
+      } catch (err) {
+        output.textContent = "Error: " + err.message;
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+Innovation Sprint – Q3 Brainstorm  
+Author: Priya S.  
+Date: June 5, 2025
+
+1. AI-powered user behavior analytics:
+   - Use LLMs to summarize session data
+   - Predict user churn and personalize onboarding
+
+2. Document-to-Action tool:
+   - Upload a doc or PDF, and get tasks automatically extracted
+   - Integrate with Trello/Asana APIs
+
+3. Browser extension for real-time knowledge retrieval:
+   - Capture highlighted text from any page
+   - Auto-summarize or explain via Gemini API
+
+4. Voice command interface for Slack:
+   - Lightweight plugin that lets users issue team commands via voice
+
+Suggested next steps:
+- Evaluate feasibility of ideas 1 and 3 for MVP prototyping.
+- Schedule design sprint for shortlisted projects by June 20.

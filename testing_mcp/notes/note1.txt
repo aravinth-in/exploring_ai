@@ -1,0 +1,15 @@
+Project: Apollo CRM Redesign  
+Date: June 10, 2025  
+Attendees: Alice, Bob, Chen, Priya  
+
+Key Points:
+- UX overhaul was approved. Bob will lead wireframing.
+- New color palette will be based on feedback from marketing team.
+- Frontend will migrate from Bootstrap to Tailwind CSS by August.
+- Backend API changes must be finalized before June 25.
+- Weekly design syncs scheduled for Tuesdays at 10am.
+
+Action Items:
+- Bob to present wireframes by next Monday.
+- Chen to draft API schema updates.
+- Priya to coordinate with marketing for branding assets.
